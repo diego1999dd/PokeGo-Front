@@ -50,6 +50,7 @@
               }
             ],
             "styles": [
+              "src/custom-theme.scss",
               "src/styles.css"
             ],
             "server": "src/main.server.ts",
@@ -114,5 +115,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "d8dc2930-aa12-4c92-98d5-3705effd4eb0"
   }
 }
