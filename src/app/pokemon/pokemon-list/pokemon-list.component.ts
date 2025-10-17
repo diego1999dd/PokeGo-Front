@@ -1,9 +1,8 @@
 import { Component, OnInit, PLATFORM_ID, Inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PokemonService } from '../../services/pokemon.service';
 import { AuthService } from '../../services/auth.service';
-import { isPlatformBrowser } from '@angular/common';
 
 interface Pokemon {
   codigo: string;
@@ -26,6 +25,9 @@ export class PokemonListComponent implements OnInit {
   errorMessage: string = '';
   isBrowser: boolean;
 
+  // Lógica de Filtro
+  currentFilter: 'all' | 'favorites' | 'team' = 'all';
+
   constructor(
     private pokemonService: PokemonService,
     public authService: AuthService,
@@ -41,21 +43,33 @@ export class PokemonListComponent implements OnInit {
     }
   }
 
+  // Getter para o filtro no template
+  get filteredPokemonList(): Pokemon[] {
+    if (this.currentFilter === 'favorites') {
+      return this.pokemonList ? this.pokemonList.filter((p) => p.favorito) : [];
+    }
+    if (this.currentFilter === 'team') {
+      return this.pokemonList ? this.pokemonList.filter((p) => p.grupo_batalha) : [];
+    }
+    return this.pokemonList || [];
+  }
+
+  // Método para mudar o filtro (chamado pelos botões)
+  setFilter(filter: 'all' | 'favorites' | 'team'): void {
+    this.currentFilter = filter;
+    this.cdr.markForCheck();
+  }
+
   loadPokemonList(): void {
     this.pokemonService.getPokemonList().subscribe({
       next: (list) => {
-        console.log('Dados recebidos com sucesso:', list);
         this.pokemonList = list;
-        this.cdr.markForCheck(); // Avisa o Angular para atualizar a tela
+        this.cdr.markForCheck();
       },
       error: (err) => {
-        console.error('Erro detalhado ao carregar Pokémon:', err);
-        this.errorMessage = `Falha ao carregar Pokémon. Verifique se a API está rodando e o console do navegador para mais detalhes.`;
+        this.errorMessage = `Falha ao carregar Pokémon. Verifique sua API.`;
         this.pokemonList = [];
-        this.cdr.markForCheck(); // Avisa o Angular para atualizar a tela
-      },
-      complete: () => {
-        console.log('Requisição para Pokémon concluída.');
+        this.cdr.markForCheck();
       },
     });
   }
