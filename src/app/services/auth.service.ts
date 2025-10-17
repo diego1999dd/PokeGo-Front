@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -12,7 +13,11 @@ export class AuthService {
   private readonly apiUrl = 'http://127.0.0.1:5000/api/v1/auth';
   private readonly tokenKey = 'access_token';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   /**
    * Tenta fazer login com as credenciais fornecidas.
@@ -23,7 +28,7 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response) => {
         // 1. Salva o token JWT no armazenamento local após um login bem-sucedido
-        if (response && response.access_token) {
+        if (isPlatformBrowser(this.platformId) && response && response.access_token) {
           localStorage.setItem(this.tokenKey, response.access_token);
         }
       })
@@ -35,7 +40,10 @@ export class AuthService {
    * @returns O token JWT (string) ou null.
    */
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem(this.tokenKey);
+    }
+    return null;
   }
 
   /**
@@ -51,7 +59,9 @@ export class AuthService {
    * Remove o token e desloga o usuário.
    */
   logout(): void {
-    localStorage.removeItem(this.tokenKey);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(this.tokenKey);
+    }
     this.router.navigate(['/login']);
   }
 }
