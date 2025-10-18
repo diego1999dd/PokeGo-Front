@@ -30,14 +30,6 @@
         />
       </div>
 
-      <!-- Mensagem de Erro -->
-      <div
-        *ngIf="errorMessage"
-        class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm text-center"
-      >
-        {{ errorMessage }}
-      </div>
-
       <!-- Botão de Submissão -->
       <button
         type="submit"
@@ -81,3 +73,12 @@
     </form>
   </div>
 </div>
+
+<!-- Popup Component -->
+<app-popup
+  [show]="showPopup"
+  [title]="popupTitle"
+  [message]="popupMessage"
+  type="error"
+  (closePopup)="closePopup()"
+></app-popup>

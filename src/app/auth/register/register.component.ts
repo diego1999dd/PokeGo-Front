@@ -1,29 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // NOVO: ChangeDetectorRef
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { PopupComponent } from '../../shared/popup/popup.component';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, CommonModule],
+  imports: [ReactiveFormsModule, RouterModule, CommonModule, PopupComponent],
 })
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
-  errorMessage: string = '';
   loading: boolean = false;
-  successMessage: string = '';
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {}
+  // Popup properties
+  showPopup: boolean = false;
+  popupTitle: string = '';
+  popupMessage: string = '';
+  popupType: 'success' | 'error' = 'error';
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef // NOVO: Injeta o ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
+    // CORREÇÃO: O redirecionamento aqui está OK para o teste Admin, mas certifique-se
+    // de que o usuário tem a chance de deslogar primeiro.
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/pokemon']); // Se logado, vai para a lista
+      this.router.navigate(['/pokemon']);
       return;
     }
+
     this.registerForm = this.fb.group({
       Nome: ['', Validators.required],
       Login: ['', Validators.required],
@@ -33,31 +46,53 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.showPopup = false; // Fecha popups anteriores
 
     if (this.registerForm.invalid) {
-      this.errorMessage = 'Por favor, preencha todos os campos corretamente.';
+      this.popupTitle = 'Erro de Validação';
+      this.popupMessage = 'Por favor, preencha todos os campos corretamente.';
+      this.popupType = 'error';
+      this.showPopup = true;
+      this.cdr.markForCheck(); // FORÇA ATUALIZAÇÃO
       return;
     }
 
     this.loading = true;
 
-    // NOVO: Chamada para a rota de Registro no Back-End
     this.authService.register(this.registerForm.value).subscribe({
       next: (res) => {
         this.loading = false;
-        this.successMessage = 'Cadastro realizado com sucesso! Você pode fazer login agora.';
-        // O Back-End já define o primeiro usuário como Admin
+        this.popupTitle = 'Sucesso!';
+        this.popupMessage =
+          res.msg || 'Cadastro realizado com sucesso! Você será redirecionado para o login.';
+        this.popupType = 'success';
+        this.showPopup = true;
+        this.cdr.markForCheck(); // ESSENCIAL: FORÇA A ATUALIZAÇÃO DO POPUP E LOADING
       },
       error: (err) => {
         this.loading = false;
-        if (err.status === 409) {
-          this.errorMessage = 'Login ou Email já cadastrado.';
+        console.error('Erro no cadastro:', err);
+
+        this.popupTitle = 'Erro no Cadastro';
+        this.popupType = 'error';
+
+        if (err.status === 409 && err.error && err.error.msg) {
+          this.popupMessage = err.error.msg; // Ex: "Login ou Email já cadastrado."
         } else {
-          this.errorMessage = 'Ocorreu um erro no cadastro.';
+          this.popupMessage = 'Ocorreu um erro no cadastro. Tente novamente mais tarde.';
         }
+        this.showPopup = true;
+        this.cdr.markForCheck(); // ESSENCIAL: FORÇA A ATUALIZAÇÃO DO POPUP E LOADING
       },
     });
+  }
+
+  closePopup(): void {
+    this.showPopup = false;
+    this.cdr.markForCheck();
+
+    if (this.popupType === 'success') {
+      this.router.navigate(['/login']);
+    }
   }
 }
