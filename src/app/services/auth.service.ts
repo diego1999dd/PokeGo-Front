@@ -9,15 +9,30 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
+  // URL base para rotas de autenticação (login, register, forgot_password)
   private readonly apiUrl = 'http://127.0.0.1:5000/api/v1/auth';
+  // NOVO: URL base para rotas protegidas gerais (profile, list_pokemon)
+  private readonly apiBaseUrl = 'http://127.0.0.1:5000/api/v1';
+
   private readonly tokenKey = 'access_token';
-  private readonly adminKey = 'is_admin'; // NOVO: Chave para o status de Admin
+  private readonly adminKey = 'is_admin';
 
   constructor(
     private http: HttpClient,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
+
+  /**
+   * CORRIGIDO: Permite ao usuário logado mudar a própria senha.
+   * Usa apiBaseUrl (que mapeia para /api/v1) para evitar o 404.
+   */
+  changePassword(oldPassword: string, newPassword: string): Observable<{ msg: string }> {
+    return this.http.post<{ msg: string }>(`${this.apiBaseUrl}/profile/change_password`, {
+      oldPassword,
+      newPassword,
+    });
+  }
 
   /**
    * Tenta cadastrar um novo usuário.
@@ -34,12 +49,17 @@ export class AuthService {
       tap((response) => {
         if (isPlatformBrowser(this.platformId) && response && response.access_token) {
           localStorage.setItem(this.tokenKey, response.access_token);
-
-          // NOVO: Salva o status de administrador retornado pelo Back-End
           localStorage.setItem(this.adminKey, response.is_admin ? 'true' : 'false');
         }
       })
     );
+  }
+
+  /**
+   * Solicita a redefinição de senha (usa apiUrl, que é correta para rotas auth).
+   */
+  forgotPassword(loginOrEmail: string): Observable<{ msg: string }> {
+    return this.http.post<{ msg: string }>(`${this.apiUrl}/forgot_password`, { loginOrEmail });
   }
 
   /**
@@ -53,7 +73,7 @@ export class AuthService {
   }
 
   /**
-   * NOVO: Verifica se o usuário logado é administrador.
+   * Verifica se o usuário logado é administrador.
    */
   isAdmin(): boolean {
     if (isPlatformBrowser(this.platformId)) {
@@ -75,7 +95,7 @@ export class AuthService {
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
-      localStorage.removeItem(this.adminKey); // NOVO: Remove o status de Admin
+      localStorage.removeItem(this.adminKey);
     }
     this.router.navigate(['/login']);
   }

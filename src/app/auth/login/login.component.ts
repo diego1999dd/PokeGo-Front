@@ -15,6 +15,7 @@ import { PopupComponent } from '../../shared/popup/popup.component'; // Import p
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   loading: boolean = false;
+  errorMessage: string = '';
 
   // Popup properties
   showPopup: boolean = false;
@@ -72,6 +73,7 @@ export class LoginComponent implements OnInit {
         } else {
           this.popupMessage = 'Ocorreu um erro na conexão com o servidor.';
         }
+        this.errorMessage = this.popupMessage;
 
         this.showPopup = true;
         this.cdr.markForCheck(); // ESSENCIAL: FORÇA O ANGULAR A MOSTRAR O POPUP AGORA
