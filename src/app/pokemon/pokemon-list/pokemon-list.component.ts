@@ -11,6 +11,9 @@ interface Pokemon {
   tipos: string[];
   favorito: boolean;
   grupo_batalha: boolean;
+  hp: number;
+  attack: number;
+  defense: number;
 }
 
 @Component({
@@ -21,12 +24,15 @@ interface Pokemon {
   imports: [CommonModule, RouterModule],
 })
 export class PokemonListComponent implements OnInit {
-  pokemonList: Pokemon[] | null = null;
+  pokemonList: Pokemon[] = [];
+  favoritePokemonCount: number = 0;
+  battleGroupPokemonCount: number = 0;
   errorMessage: string = '';
   isBrowser: boolean;
-
-  // Lógica de Filtro
   currentFilter: 'all' | 'favorites' | 'team' = 'all';
+
+  // PROPRIEDADE PARA FILTRO DE TIPO
+  currentTypeFilter: string | null = null;
 
   constructor(
     private pokemonService: PokemonService,
@@ -43,20 +49,42 @@ export class PokemonListComponent implements OnInit {
     }
   }
 
-  // Getter para o filtro no template
-  get filteredPokemonList(): Pokemon[] {
-    if (this.currentFilter === 'favorites') {
-      return this.pokemonList ? this.pokemonList.filter((p) => p.favorito) : [];
-    }
-    if (this.currentFilter === 'team') {
-      return this.pokemonList ? this.pokemonList.filter((p) => p.grupo_batalha) : [];
-    }
-    return this.pokemonList || [];
+  updateCounts(): void {
+    this.favoritePokemonCount = this.pokemonList.filter((p) => p.favorito).length;
+    this.battleGroupPokemonCount = this.pokemonList.filter((p) => p.grupo_batalha).length;
   }
 
-  // Método para mudar o filtro (chamado pelos botões)
+  // GETTER CORRIGIDO: Aplica Filtro de TIPO e Filtro de STATUS
+  get filteredPokemonList(): Pokemon[] {
+    let filteredList = this.pokemonList || [];
+
+    // 1. Aplicar filtro de Tipo (se ativo)
+    if (this.currentTypeFilter) {
+      filteredList = filteredList.filter((p) => p.tipos.includes(this.currentTypeFilter!));
+    }
+
+    // 2. Aplicar filtro de Status (se ativo)
+    if (this.currentFilter === 'favorites') {
+      filteredList = filteredList.filter((p) => p.favorito);
+    } else if (this.currentFilter === 'team') {
+      filteredList = filteredList.filter((p) => p.grupo_batalha);
+    }
+
+    return filteredList;
+  }
+
+  // MÉTODO PARA MUDAR O FILTRO DE STATUS
   setFilter(filter: 'all' | 'favorites' | 'team'): void {
     this.currentFilter = filter;
+    this.currentTypeFilter = null; // Reseta o filtro de tipo
+    this.cdr.markForCheck();
+  }
+
+  // NOVO MÉTODO PARA MUDAR O FILTRO DE TIPO
+  setTypeFilter(type: string | null): void {
+    // Alterna o filtro: se o tipo clicado for o mesmo, desativa o filtro
+    this.currentTypeFilter = this.currentTypeFilter === type ? null : type;
+    this.currentFilter = 'all'; // Reseta o filtro de status
     this.cdr.markForCheck();
   }
 
@@ -64,6 +92,7 @@ export class PokemonListComponent implements OnInit {
     this.pokemonService.getPokemonList().subscribe({
       next: (list) => {
         this.pokemonList = list;
+        this.updateCounts();
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -78,6 +107,7 @@ export class PokemonListComponent implements OnInit {
     this.pokemonService.toggleFavorite(pokemon.codigo).subscribe({
       next: (res) => {
         pokemon.favorito = res.favorito;
+        this.updateCounts();
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -94,6 +124,7 @@ export class PokemonListComponent implements OnInit {
           alert(res.msg);
         } else {
           pokemon.grupo_batalha = res.grupo_batalha;
+          this.updateCounts();
         }
         this.cdr.markForCheck();
       },

@@ -10,6 +10,9 @@ interface Pokemon {
   tipos: string[];
   favorito: boolean;
   grupo_batalha: boolean;
+  hp: number;
+  attack: number;
+  defense: number;
 }
 
 @Injectable({
