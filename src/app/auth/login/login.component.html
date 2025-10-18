@@ -72,6 +72,12 @@
         </svg>
         {{ loading ? 'Carregando...' : 'Entrar' }}
       </button>
+      <p class="mt-4 text-center text-sm text-gray-600">
+        Não tem conta?
+        <a [routerLink]="['/register']" class="font-medium text-blue-600 hover:text-blue-500"
+          >Faça um cadastro</a
+        >
+      </p>
     </form>
   </div>
 </div>

@@ -9,9 +9,9 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  // URL base da sua API Flask
   private readonly apiUrl = 'http://127.0.0.1:5000/api/v1/auth';
   private readonly tokenKey = 'access_token';
+  private readonly adminKey = 'is_admin'; // NOVO: Chave para o status de Admin
 
   constructor(
     private http: HttpClient,
@@ -20,16 +20,23 @@ export class AuthService {
   ) {}
 
   /**
+   * Tenta cadastrar um novo usuário.
+   */
+  register(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, data);
+  }
+
+  /**
    * Tenta fazer login com as credenciais fornecidas.
-   * @param credentials Objeto com Login e Senha.
-   * @returns Observable da resposta do login.
    */
   login(credentials: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response) => {
-        // 1. Salva o token JWT no armazenamento local após um login bem-sucedido
         if (isPlatformBrowser(this.platformId) && response && response.access_token) {
           localStorage.setItem(this.tokenKey, response.access_token);
+
+          // NOVO: Salva o status de administrador retornado pelo Back-End
+          localStorage.setItem(this.adminKey, response.is_admin ? 'true' : 'false');
         }
       })
     );
@@ -37,7 +44,6 @@ export class AuthService {
 
   /**
    * Obtém o token JWT salvo.
-   * @returns O token JWT (string) ou null.
    */
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
@@ -47,9 +53,17 @@ export class AuthService {
   }
 
   /**
-   * Verifica se o usuário está logado (se houver um token).
-   * Em uma aplicação real, você também checaria a validade do token.
-   * @returns Verdadeiro se o token existir.
+   * NOVO: Verifica se o usuário logado é administrador.
+   */
+  isAdmin(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem(this.adminKey) === 'true';
+    }
+    return false;
+  }
+
+  /**
+   * Verifica se o usuário está logado.
    */
   isLoggedIn(): boolean {
     return !!this.getToken();
@@ -61,6 +75,7 @@ export class AuthService {
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
+      localStorage.removeItem(this.adminKey); // NOVO: Remove o status de Admin
     }
     this.router.navigate(['/login']);
   }
