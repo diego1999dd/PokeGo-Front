@@ -13,6 +13,7 @@ interface User {
   IsAdmin: boolean;
 }
 
+// Renderiza o dashboard de administração para gerenciar usuários
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
