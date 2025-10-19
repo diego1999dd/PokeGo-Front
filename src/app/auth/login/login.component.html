@@ -1,5 +1,14 @@
-<div class="flex items-center justify-center min-h-screen bg-gray-50 p-4">
-  <div class="w-full max-w-md bg-white p-8 shadow-2xl rounded-xl">
+<div class="relative flex items-center justify-center min-h-screen p-4">
+  <div
+    class="absolute inset-0 bg-cover bg-center"
+    style="background-image: url('/Pokemon.jpg')"
+    role="img"
+    aria-label="Imagem de fundo com tema Pokémon"
+  >
+    <div class="absolute inset-0 bg-black opacity-30"></div>
+  </div>
+
+  <div class="w-full max-w-md bg-white p-8 shadow-2xl rounded-xl relative z-10">
     <div class="text-center mb-6">
       <h1 class="text-3xl font-extrabold text-blue-700">Pokédex Digital</h1>
       <p class="text-gray-500 mt-2">Acesso do Treinador</p>
@@ -70,17 +79,17 @@
       </button>
 
       <div class="mt-4 text-center text-sm text-gray-600">
-        <p>
-          Não tem conta?
-          <a [routerLink]="['/register']" class="font-medium text-blue-600 hover:text-blue-500"
-            >Faça um cadastro</a
-          >
-        </p>
         <p class="mt-2">
           <a
             [routerLink]="['/forgot-password']"
             class="font-medium text-blue-600 hover:text-blue-500"
             >Esqueceu sua senha?</a
+          >
+        </p>
+        <p class="flex flex-col text-black gap-2">
+          Não tem uma conta?
+          <a [routerLink]="['/register']" class="font-medium text-blue-600 hover:text-blue-500"
+            >Faça um cadastro</a
           >
         </p>
       </div>

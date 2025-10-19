@@ -26,7 +26,7 @@ export class AdminDashboardComponent implements OnInit {
   successMessage: string = '';
   newPassword: { [key: number]: string } = {};
   parseInt = parseInt;
-  
+
   constructor(
     private adminService: AdminService,
     public authService: AuthService,
@@ -61,11 +61,9 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  // MÉTODO CORRIGIDO: Promove ou remove o status de Admin
   toggleAdmin(user: User): void {
     const newStatus = !user.IsAdmin;
 
-    // 1. Previne o Admin de despromover a si mesmo (segurança)
     if (user.IDUsuario === parseInt(this.authService.getToken() || '0', 10) && !newStatus) {
       this.errorMessage = 'Você não pode remover seu próprio status de administrador.';
       this.successMessage = '';
@@ -77,8 +75,7 @@ export class AdminDashboardComponent implements OnInit {
 
     this.adminService.setAdminStatus(user.IDUsuario, newStatus).subscribe({
       next: (res: { msg: string }) => {
-        this.successMessage = res.msg; // EXIBE MENSAGEM DE SUCESSO
-        // 2. CORREÇÃO: Força a atualização da lista após a mudança de status
+        this.successMessage = res.msg;
         this.loadUsers();
       },
       error: (err: any) => {

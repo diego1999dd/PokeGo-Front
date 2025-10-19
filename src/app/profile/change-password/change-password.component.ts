@@ -30,7 +30,6 @@ export class ChangePasswordComponent implements OnInit {
     );
   }
 
-  // Validador Customizado: Verifica se a nova senha e a confirmação são iguais
   passwordMatchValidator(form: FormGroup) {
     const newPass = form.get('newPassword')?.value;
     const confirmPass = form.get('confirmPassword')?.value;
@@ -54,7 +53,7 @@ export class ChangePasswordComponent implements OnInit {
         this.loading = false;
         this.successMessage =
           res.msg || 'Senha atualizada com sucesso! Por favor, faça login novamente.';
-        this.authService.logout(); // Força o logout para que o novo login use a nova senha
+        this.authService.logout();
       },
       error: (err) => {
         this.loading = false;

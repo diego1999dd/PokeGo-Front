@@ -3,12 +3,12 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { PopupComponent } from '../../shared/popup/popup.component'; // Import popup
+import { PopupComponent } from '../../shared/popup/popup.component';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.css'], // Corrigido para .component.css
+  styleUrls: ['./login.css'],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, PopupComponent],
 })
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef // NOVO: Injeta o ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -41,13 +41,13 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.showPopup = false; // Fecha o popup antes de tentar novamente
+    this.showPopup = false;
 
     if (this.loginForm.invalid) {
       this.popupTitle = 'Erro de Validação';
       this.popupMessage = 'Por favor, preencha todos os campos.';
       this.showPopup = true;
-      this.cdr.markForCheck(); // FORÇA A ATUALIZAÇÃO
+      this.cdr.markForCheck();
       return;
     }
 
@@ -58,14 +58,14 @@ export class LoginComponent implements OnInit {
       next: () => {
         this.loading = false;
         this.router.navigate(['/pokemon']);
-        this.cdr.markForCheck(); // FORÇA A ATUALIZAÇÃO
+        this.cdr.markForCheck();
       },
       error: (err) => {
-        this.loading = false; // Desliga o loading
+        this.loading = false;
         console.error('Erro no login:', err);
 
         this.popupTitle = 'Erro no Login';
-        // Captura a mensagem de erro específica do Back-End Flask
+
         if (err.status === 401 && err.error && err.error.msg) {
           this.popupMessage = err.error.msg;
         } else if (err.status === 401) {
@@ -76,13 +76,13 @@ export class LoginComponent implements OnInit {
         this.errorMessage = this.popupMessage;
 
         this.showPopup = true;
-        this.cdr.markForCheck(); // ESSENCIAL: FORÇA O ANGULAR A MOSTRAR O POPUP AGORA
+        this.cdr.markForCheck();
       },
     });
   }
 
   closePopup(): void {
     this.showPopup = false;
-    this.cdr.markForCheck(); // FORÇA A ATUALIZAÇÃO
+    this.cdr.markForCheck();
   }
 }

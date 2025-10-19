@@ -31,7 +31,7 @@ export class PokemonListComponent implements OnInit {
   isBrowser: boolean;
   currentFilter: 'all' | 'favorites' | 'team' = 'all';
 
-  // PROPRIEDADE PARA FILTRO DE TIPO
+  
   currentTypeFilter: string | null = null;
 
   constructor(
@@ -54,16 +54,16 @@ export class PokemonListComponent implements OnInit {
     this.battleGroupPokemonCount = this.pokemonList.filter((p) => p.grupo_batalha).length;
   }
 
-  // GETTER CORRIGIDO: Aplica Filtro de TIPO e Filtro de STATUS
+ 
   get filteredPokemonList(): Pokemon[] {
     let filteredList = this.pokemonList || [];
 
-    // 1. Aplicar filtro de Tipo (se ativo)
+ 
     if (this.currentTypeFilter) {
       filteredList = filteredList.filter((p) => p.tipos.includes(this.currentTypeFilter!));
     }
 
-    // 2. Aplicar filtro de Status (se ativo)
+  
     if (this.currentFilter === 'favorites') {
       filteredList = filteredList.filter((p) => p.favorito);
     } else if (this.currentFilter === 'team') {
@@ -73,18 +73,18 @@ export class PokemonListComponent implements OnInit {
     return filteredList;
   }
 
-  // MÉTODO PARA MUDAR O FILTRO DE STATUS
+  
   setFilter(filter: 'all' | 'favorites' | 'team'): void {
     this.currentFilter = filter;
-    this.currentTypeFilter = null; // Reseta o filtro de tipo
+    this.currentTypeFilter = null; 
     this.cdr.markForCheck();
   }
 
-  // NOVO MÉTODO PARA MUDAR O FILTRO DE TIPO
+ 
   setTypeFilter(type: string | null): void {
-    // Alterna o filtro: se o tipo clicado for o mesmo, desativa o filtro
+   
     this.currentTypeFilter = this.currentTypeFilter === type ? null : type;
-    this.currentFilter = 'all'; // Reseta o filtro de status
+    this.currentFilter = 'all'; 
     this.cdr.markForCheck();
   }
 

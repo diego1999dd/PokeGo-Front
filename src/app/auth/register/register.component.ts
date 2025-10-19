@@ -16,7 +16,6 @@ export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
   loading: boolean = false;
 
-  // Popup properties
   showPopup: boolean = false;
   popupTitle: string = '';
   popupMessage: string = '';
@@ -26,12 +25,10 @@ export class RegisterComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef // NOVO: Injeta o ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    // CORREÇÃO: O redirecionamento aqui está OK para o teste Admin, mas certifique-se
-    // de que o usuário tem a chance de deslogar primeiro.
     if (this.authService.isLoggedIn()) {
       this.router.navigate(['/pokemon']);
       return;
@@ -46,14 +43,14 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.showPopup = false; // Fecha popups anteriores
+    this.showPopup = false;
 
     if (this.registerForm.invalid) {
       this.popupTitle = 'Erro de Validação';
       this.popupMessage = 'Por favor, preencha todos os campos corretamente.';
       this.popupType = 'error';
       this.showPopup = true;
-      this.cdr.markForCheck(); // FORÇA ATUALIZAÇÃO
+      this.cdr.markForCheck();
       return;
     }
 
@@ -67,7 +64,7 @@ export class RegisterComponent implements OnInit {
           res.msg || 'Cadastro realizado com sucesso! Você será redirecionado para o login.';
         this.popupType = 'success';
         this.showPopup = true;
-        this.cdr.markForCheck(); // ESSENCIAL: FORÇA A ATUALIZAÇÃO DO POPUP E LOADING
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.loading = false;
@@ -77,12 +74,12 @@ export class RegisterComponent implements OnInit {
         this.popupType = 'error';
 
         if (err.status === 409 && err.error && err.error.msg) {
-          this.popupMessage = err.error.msg; // Ex: "Login ou Email já cadastrado."
+          this.popupMessage = err.error.msg;
         } else {
           this.popupMessage = 'Ocorreu um erro no cadastro. Tente novamente mais tarde.';
         }
         this.showPopup = true;
-        this.cdr.markForCheck(); // ESSENCIAL: FORÇA A ATUALIZAÇÃO DO POPUP E LOADING
+        this.cdr.markForCheck();
       },
     });
   }

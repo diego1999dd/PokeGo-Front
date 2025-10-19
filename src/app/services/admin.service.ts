@@ -16,7 +16,6 @@ export class AdminService {
     return this.http.get<User[]>(`${this.apiUrl}/users`);
   }
 
-  // NOVO: Função para promover/remover status de administrador
   setAdminStatus(userId: number, isAdmin: boolean): Observable<{ msg: string }> {
     return this.http.post<{ msg: string }>(`${this.apiUrl}/set_admin`, {
       IDUsuario: userId,

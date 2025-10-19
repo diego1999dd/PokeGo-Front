@@ -21,10 +21,10 @@ export class ForgotPasswordComponent {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef // NOVO: Injeta o ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) {
     this.forgotPasswordForm = this.fb.group({
-      loginOrEmail: ['', Validators.required], // A validação de e-mail pode ser feita no Back-End para permitir Login
+      loginOrEmail: ['', Validators.required],
     });
   }
 
@@ -35,7 +35,7 @@ export class ForgotPasswordComponent {
     if (this.forgotPasswordForm.invalid) {
       this.message = 'Por favor, insira seu login ou e-mail.';
       this.isError = true;
-      this.cdr.markForCheck(); // Força a exibição da mensagem de validação
+      this.cdr.markForCheck();
       return;
     }
 
@@ -46,20 +46,19 @@ export class ForgotPasswordComponent {
       next: (res) => {
         this.loading = false;
 
-        // Captura a senha temporária para fins de teste
         const tempPassword = res.msg.split(': ')[1];
 
         this.message = `Sucesso! Senha temporária: ${tempPassword}. Use-a para fazer login.`;
         this.isError = false;
-        this.cdr.markForCheck(); // ESSENCIAL: Força o Angular a renderizar a mensagem de sucesso
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.loading = false;
-        // Tratar como sucesso para não dar dicas de segurança
+
         this.message =
           'Se um usuário com este login/e-mail existir, uma senha temporária foi definida.';
         this.isError = false;
-        this.cdr.markForCheck(); // Força o Angular a renderizar a mensagem
+        this.cdr.markForCheck();
       },
     });
   }
