@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 interface User {
@@ -18,22 +18,23 @@ interface User {
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule]
+  imports: [CommonModule, FormsModule, RouterModule],
 })
 export class AdminDashboardComponent implements OnInit {
   users: User[] = [];
   errorMessage: string = '';
   successMessage: string = '';
-  newPassword: { [key: number]: string } = {}; // Objeto para armazenar a nova senha de cada usuário
-
+  newPassword: { [key: number]: string } = {};
+  parseInt = parseInt;
+  
   constructor(
     private adminService: AdminService,
     public authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    // 1. Redireciona se não for Admin (Proteção Front-End)
     if (!this.authService.isAdmin()) {
       alert('Acesso negado. Apenas administradores.');
       this.router.navigate(['/pokemon']);
@@ -44,14 +45,45 @@ export class AdminDashboardComponent implements OnInit {
 
   loadUsers(): void {
     this.errorMessage = '';
+    this.successMessage = '';
     this.adminService.getAllUsers().subscribe({
       next: (data: User[]) => {
         this.users = data;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error('Erro ao carregar usuários:', err);
-        this.errorMessage = 'Falha ao carregar lista de usuários.';
-      }
+        this.errorMessage =
+          'Falha ao carregar lista de usuários. (Erro: ' +
+          (err.error?.msg || 'Comunicação API') +
+          ')';
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  // MÉTODO CORRIGIDO: Promove ou remove o status de Admin
+  toggleAdmin(user: User): void {
+    const newStatus = !user.IsAdmin;
+
+    // 1. Previne o Admin de despromover a si mesmo (segurança)
+    if (user.IDUsuario === parseInt(this.authService.getToken() || '0', 10) && !newStatus) {
+      this.errorMessage = 'Você não pode remover seu próprio status de administrador.';
+      this.successMessage = '';
+      return;
+    }
+
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    this.adminService.setAdminStatus(user.IDUsuario, newStatus).subscribe({
+      next: (res: { msg: string }) => {
+        this.successMessage = res.msg; // EXIBE MENSAGEM DE SUCESSO
+        // 2. CORREÇÃO: Força a atualização da lista após a mudança de status
+        this.loadUsers();
+      },
+      error: (err: any) => {
+        this.errorMessage = err.error?.msg || 'Erro ao atualizar status.';
+      },
     });
   }
 
@@ -62,19 +94,19 @@ export class AdminDashboardComponent implements OnInit {
       alert('A nova senha deve ter pelo menos 6 caracteres.');
       return;
     }
-    
+
     this.successMessage = '';
     this.errorMessage = '';
 
     this.adminService.resetUserPassword(user.IDUsuario, password).subscribe({
       next: (res: { msg: string }) => {
         this.successMessage = res.msg;
-        this.newPassword[user.IDUsuario] = ''; // Limpa o campo
+        this.newPassword[user.IDUsuario] = '';
+        this.loadUsers();
       },
       error: (err: any) => {
-        console.error('Erro ao resetar senha:', err);
         this.errorMessage = err.error?.msg || 'Erro ao resetar senha.';
-      }
+      },
     });
   }
 }
