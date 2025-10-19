@@ -1,262 +1,278 @@
-<div class="min-h-screen bg-gray-50 p-6 font-inter">
-  <header class="bg-orange-600 p-4 shadow-md">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <h1 class="text-3xl font-bold text-white">Pokédex Digital</h1>
-
-      <div class="flex space-x-3 items-center">
-        <a
-          *ngIf="authService.isAdmin()"
-          [routerLink]="['/admin']"
-          class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold py-2 px-4 rounded transition duration-150 text-sm"
-        >
-          Painel Admin
-        </a>
-        <a
-          (click)="authService.logout()"
-          class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition duration-150 cursor-pointer"
-          title="Sair da aplicação"
-        >
-          Sair
-        </a>
-        <a
-          [routerLink]="['/change-password']"
-          class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded transition duration-150 text-sm"
-        >
-          Atualizar Senha
-        </a>
+<header class="bg-orange-600 p-4 shadow-md">
+  <div class="max-w-7xl mx-auto flex justify-between items-center py-3">
+    <div class="flex flex-col space-y-3">
+      <div class="flex items-center space-x-3 justify-start">
+        <svg width="39" height="39" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" stroke="white" stroke-width="5" fill="none" />
+        </svg>
+        <h1 class="text-[28px] font-bold text-white">Pokédex Digital</h1>
       </div>
+      <p class="text-base">
+        Explore o mundo dos Pokémon com nossa Pokédex interativa. Descubra <br />
+        informações detalhadas sobre cada criatura.
+      </p>
     </div>
-  </header>
 
-  <div class="bg-blue-800 text-white p-2 shadow-inner">
-    <div class="max-w-7xl mx-auto flex space-x-8 text-center text-sm">
-      <div class="font-bold">
-        {{ pokemonList.length }} <span class="block font-normal">Pokémon</span>
-      </div>
-      <div class="font-bold">{{ 18 }} <span class="block font-normal">Tipos</span></div>
-      <div class="font-bold">{{ 9 }} <span class="block font-normal">Gerações</span></div>
+    <div class="flex space-x-3 items-center">
+      <a
+        *ngIf="authService.isAdmin()"
+        [routerLink]="['/admin']"
+        class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold py-2 px-4 rounded transition duration-150 text-sm"
+      >
+        Painel Admin
+      </a>
+      <a
+        (click)="authService.logout()"
+        class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition duration-150 cursor-pointer"
+        title="Sair da aplicação"
+      >
+        Sair
+      </a>
+      <a
+        [routerLink]="['/change-password']"
+        class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded transition duration-150 text-sm"
+      >
+        Atualizar Senha
+      </a>
     </div>
   </div>
+</header>
 
-  <main class="max-w-7xl mx-auto mt-6 px-4">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Pokémon Descobertos</h2>
-
-    <div class="flex space-x-2 mb-6 border-b border-gray-200 pb-4 overflow-x-auto">
-      <button
-        (click)="setTypeFilter(null)"
-        [ngClass]="{
-          'bg-gray-700 text-white': currentTypeFilter === null,
-          'bg-gray-200 text-gray-700 hover:bg-gray-300': currentTypeFilter !== null
-        }"
-        class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
-      >
-        Todos os Tipos
-      </button>
-
-      <button
-        (click)="setTypeFilter('fire')"
-        [ngClass]="{
-          'bg-red-600 text-white': currentTypeFilter === 'fire',
-          'bg-red-300/50 text-red-800 hover:bg-red-300': currentTypeFilter !== 'fire'
-        }"
-        class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
-      >
-        Fogo
-      </button>
-
-      <button
-        (click)="setTypeFilter('water')"
-        [ngClass]="{
-          'bg-blue-600 text-white': currentTypeFilter === 'water',
-          'bg-blue-300/50 text-blue-800 hover:bg-blue-300': currentTypeFilter !== 'water'
-        }"
-        class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
-      >
-        Água
-      </button>
-
-      <button
-        (click)="setTypeFilter('grass')"
-        [ngClass]="{
-          'bg-green-600 text-white': currentTypeFilter === 'grass',
-          'bg-green-300/50 text-green-800 hover:bg-green-300': currentTypeFilter !== 'grass'
-        }"
-        class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
-      >
-        Grama
-      </button>
-
-      <button
-        (click)="setTypeFilter('electric')"
-        [ngClass]="{
-          'bg-yellow-500 text-white': currentTypeFilter === 'electric',
-          'bg-yellow-300/50 text-yellow-800 hover:bg-yellow-300': currentTypeFilter !== 'electric'
-        }"
-        class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
-      >
-        Elétrico
-      </button>
+<div class="bg-violet-800 text-white p-2 py-5">
+  <div class="max-w-7xl mx-auto flex space-x-8 text-center text-base">
+    <div class="font-bold">
+      {{ pokemonList.length }}
+      <p class="block font-normal">Pokémon</p>
     </div>
-
-    <div class="flex space-x-4 mb-6 overflow-x-auto pb-2 border-b border-gray-200">
-      <button
-        (click)="setFilter('all')"
-        [ngClass]="{
-          'bg-blue-600 text-white shadow-lg': currentFilter === 'all',
-          'bg-white text-gray-700 hover:bg-gray-100': currentFilter !== 'all'
-        }"
-        class="px-4 py-2 rounded-lg font-semibold shadow transition duration-150 whitespace-nowrap text-sm"
-      >
-        Todos ({{ pokemonList.length }})
-      </button>
-
-      <button
-        (click)="setFilter('favorites')"
-        [ngClass]="{
-          'bg-yellow-500 text-white shadow-lg': currentFilter === 'favorites',
-          'bg-white text-gray-700 hover:bg-gray-100': currentFilter !== 'favorites'
-        }"
-        class="px-4 py-2 rounded-lg font-semibold shadow transition duration-150 whitespace-nowrap text-sm"
-      >
-        Favoritos ({{ favoritePokemonCount }})
-      </button>
-
-      <button
-        (click)="setFilter('team')"
-        [ngClass]="{
-          'bg-green-600 text-white shadow-lg': currentFilter === 'team',
-          'bg-white text-gray-700 hover:bg-gray-100': currentFilter !== 'team'
-        }"
-        class="px-4 py-2 rounded-lg font-semibold shadow transition duration-150 whitespace-nowrap text-sm"
-      >
-        Grupo de Batalha ({{ battleGroupPokemonCount }})
-      </button>
+    <div class="font-bold">
+      {{ 18 }}
+      <p class="block font-normal">Tipos</p>
     </div>
-
-    <div *ngIf="errorMessage" class="p-4 bg-red-100 border-l-4 border-red-500 text-red-700">
-      <p>{{ errorMessage }}</p>
+    <div class="font-bold">
+      {{ 9 }}
+      <p class="block font-normal">Gerações</p>
     </div>
+  </div>
+</div>
 
-    <div
-      *ngIf="filteredPokemonList && filteredPokemonList.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+<main class="max-w-7xl mt-6 mx-auto pb-10">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-4">Pokémon Descobertos</h2>
+
+  <div class="flex space-x-2 mb-6 border-b border-gray-200 pb-4 overflow-x-auto">
+    <button
+      (click)="setTypeFilter(null)"
+      [ngClass]="{
+        'bg-gray-700 text-white': currentTypeFilter === null,
+        'bg-gray-200 text-gray-700 hover:bg-gray-300': currentTypeFilter !== null
+      }"
+      class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
     >
-      <div
-        *ngFor="let pokemon of filteredPokemonList"
-        class="bg-white rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.02] overflow-hidden border-2 cursor-pointer relative p-0"
-        [ngClass]="{
-          'border-yellow-500 ring-2 ring-yellow-300': pokemon.favorito,
-          'border-red-500 ring-2 ring-red-300': pokemon.grupo_batalha,
-          'border-gray-200 hover:shadow-xl': !pokemon.favorito && !pokemon.grupo_batalha
-        }"
-      >
-        <div class="flex flex-col items-center p-4">
-          <div class="absolute top-2 right-2 flex space-x-1 p-2">
-            <span
-              *ngIf="pokemon.grupo_batalha"
-              class="h-5 w-5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold shadow-md"
-              title="Membro da Equipe"
-              >E</span
-            >
-            <span
-              *ngIf="pokemon.favorito"
-              class="h-5 w-5 rounded-full bg-yellow-500 text-white flex items-center justify-center text-xs font-bold shadow-md"
-              title="Favorito"
-              >★</span
-            >
+      Todos os Tipos
+    </button>
+
+    <button
+      (click)="setTypeFilter('fire')"
+      [ngClass]="{
+        'bg-red-600 text-white': currentTypeFilter === 'fire',
+        'bg-red-300/50 text-red-800 hover:bg-red-300': currentTypeFilter !== 'fire'
+      }"
+      class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
+    >
+      Fogo
+    </button>
+
+    <button
+      (click)="setTypeFilter('water')"
+      [ngClass]="{
+        'bg-blue-600 text-white': currentTypeFilter === 'water',
+        'bg-blue-300/50 text-blue-800 hover:bg-blue-300': currentTypeFilter !== 'water'
+      }"
+      class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
+    >
+      Água
+    </button>
+
+    <button
+      (click)="setTypeFilter('grass')"
+      [ngClass]="{
+        'bg-green-600 text-white': currentTypeFilter === 'grass',
+        'bg-green-300/50 text-green-800 hover:bg-green-300': currentTypeFilter !== 'grass'
+      }"
+      class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
+    >
+      Grama
+    </button>
+
+    <button
+      (click)="setTypeFilter('electric')"
+      [ngClass]="{
+        'bg-yellow-500 text-white': currentTypeFilter === 'electric',
+        'bg-yellow-300/50 text-yellow-800 hover:bg-yellow-300': currentTypeFilter !== 'electric'
+      }"
+      class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition duration-150"
+    >
+      Elétrico
+    </button>
+  </div>
+
+  <div class="flex space-x-4 mb-6 overflow-x-auto pb-2 border-b border-gray-200">
+    <button
+      (click)="setFilter('all')"
+      [ngClass]="{
+        'bg-blue-600 text-white shadow-lg': currentFilter === 'all',
+        'bg-white text-gray-700 hover:bg-gray-100': currentFilter !== 'all'
+      }"
+      class="px-4 py-2 rounded-lg font-semibold shadow transition duration-150 whitespace-nowrap text-sm"
+    >
+      Todos ({{ pokemonList.length }})
+    </button>
+
+    <button
+      (click)="setFilter('favorites')"
+      [ngClass]="{
+        'bg-yellow-500 text-white shadow-lg': currentFilter === 'favorites',
+        'bg-white text-gray-700 hover:bg-gray-100': currentFilter !== 'favorites'
+      }"
+      class="px-4 py-2 rounded-lg font-semibold shadow transition duration-150 whitespace-nowrap text-sm"
+    >
+      Favoritos ({{ favoritePokemonCount }})
+    </button>
+
+    <button
+      (click)="setFilter('team')"
+      [ngClass]="{
+        'bg-green-600 text-white shadow-lg': currentFilter === 'team',
+        'bg-white text-gray-700 hover:bg-gray-100': currentFilter !== 'team'
+      }"
+      class="px-4 py-2 rounded-lg font-semibold shadow transition duration-150 whitespace-nowrap text-sm"
+    >
+      Grupo de Batalha ({{ battleGroupPokemonCount }})
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="p-4 bg-red-100 border-l-4 border-red-500 text-red-700">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div
+    *ngIf="filteredPokemonList && filteredPokemonList.length > 0"
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+  >
+    <div
+      *ngFor="let pokemon of filteredPokemonList"
+      class="bg-white rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.02] overflow-hidden border-2 cursor-pointer relative p-0"
+      [ngClass]="{
+        'border-yellow-500 ring-2 ring-yellow-300': pokemon.favorito,
+        'border-red-500 ring-2 ring-red-300': pokemon.grupo_batalha,
+        'border-gray-200 hover:shadow-xl': !pokemon.favorito && !pokemon.grupo_batalha
+      }"
+    >
+      <div class="flex flex-col items-center p-4">
+        <div class="absolute top-2 right-2 flex space-x-1 p-2">
+          <span
+            *ngIf="pokemon.grupo_batalha"
+            class="h-5 w-5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold shadow-md"
+            title="Membro da Equipe"
+            >E</span
+          >
+          <span
+            *ngIf="pokemon.favorito"
+            class="h-5 w-5 rounded-full bg-yellow-500 text-white flex items-center justify-center text-xs font-bold shadow-md"
+            title="Favorito"
+            >★</span
+          >
+        </div>
+
+        <div class="w-full text-left mb-2 text-sm text-gray-400 font-mono">
+          #{{ pokemon.codigo }}
+        </div>
+        <img
+          [src]="pokemon.imagem_url"
+          [alt]="pokemon.nome"
+          class="w-28 h-28 object-contain mb-2"
+        />
+        <h3 class="text-xl font-bold text-gray-900 mt-2">{{ pokemon.nome }}</h3>
+
+        <div class="w-full mt-4 space-y-2">
+          <div class="text-sm font-medium text-gray-600">
+            HP <span class="float-right font-bold">{{ pokemon.hp }}</span>
+          </div>
+          <div class="h-1 bg-gray-300 rounded-full">
+            <div
+              class="h-1 bg-green-500 rounded-full"
+              [style.width.%]="(pokemon.hp / 150) * 100"
+            ></div>
           </div>
 
-          <div class="w-full text-left mb-2 text-sm text-gray-400 font-mono">
-            #{{ pokemon.codigo }}
+          <div class="text-sm font-medium text-gray-600">
+            Ataque <span class="float-right font-bold">{{ pokemon.attack }}</span>
           </div>
-          <img
-            [src]="pokemon.imagem_url"
-            [alt]="pokemon.nome"
-            class="w-28 h-28 object-contain mb-2"
-          />
-          <h3 class="text-xl font-bold text-gray-900 mt-2">{{ pokemon.nome }}</h3>
-
-          <div class="w-full mt-4 space-y-2">
-            <div class="text-sm font-medium text-gray-600">
-              HP <span class="float-right font-bold">{{ pokemon.hp }}</span>
-            </div>
-            <div class="h-1 bg-gray-300 rounded-full">
-              <div
-                class="h-1 bg-green-500 rounded-full"
-                [style.width.%]="(pokemon.hp / 150) * 100"
-              ></div>
-            </div>
-
-            <div class="text-sm font-medium text-gray-600">
-              Ataque <span class="float-right font-bold">{{ pokemon.attack }}</span>
-            </div>
-            <div class="h-1 bg-gray-300 rounded-full">
-              <div
-                class="h-1 bg-red-500/70 rounded-full"
-                [style.width.%]="(pokemon.attack / 150) * 100"
-              ></div>
-            </div>
-
-            <div class="text-sm font-medium text-gray-600">
-              Defesa <span class="float-right font-bold">{{ pokemon.defense }}</span>
-            </div>
-            <div class="h-1 bg-gray-300 rounded-full">
-              <div
-                class="h-1 bg-blue-500/70 rounded-full"
-                [style.width.%]="(pokemon.defense / 150) * 100"
-              ></div>
-            </div>
+          <div class="h-1 bg-gray-300 rounded-full">
+            <div
+              class="h-1 bg-red-500/70 rounded-full"
+              [style.width.%]="(pokemon.attack / 150) * 100"
+            ></div>
           </div>
 
-          <div class="flex space-x-2 mt-4">
-            <span
-              *ngFor="let type of pokemon.tipos"
-              class="text-xs font-semibold px-2 py-0.5 rounded-full text-white"
-              [ngClass]="{
-                'bg-green-600': type === 'grass',
-                'bg-red-600': type === 'fire',
-                'bg-blue-600': type === 'water',
-                'bg-gray-400': type === 'normal',
-                'bg-yellow-500': type === 'electric',
-                'bg-purple-600': type === 'poison'
-              }"
-            >
-              {{ type }}
-            </span>
+          <div class="text-sm font-medium text-gray-600">
+            Defesa <span class="float-right font-bold">{{ pokemon.defense }}</span>
           </div>
+          <div class="h-1 bg-gray-300 rounded-full">
+            <div
+              class="h-1 bg-blue-500/70 rounded-full"
+              [style.width.%]="(pokemon.defense / 150) * 100"
+            ></div>
+          </div>
+        </div>
 
-          <div class="flex justify-between w-full mt-4">
-            <button
-              (click)="toggleFavorite(pokemon)"
-              class="p-2 text-sm rounded-lg"
-              [ngClass]="{
-                'text-red-500 hover:bg-red-50': pokemon.favorito,
-                'text-gray-500 hover:bg-gray-50': !pokemon.favorito
-              }"
-            >
-              {{ pokemon.favorito ? 'Remover' : 'Favoritar' }}
-            </button>
-            <button
-              (click)="toggleTeam(pokemon)"
-              class="p-2 text-sm rounded-lg"
-              [ngClass]="{
-                'text-blue-600 hover:bg-blue-50': pokemon.grupo_batalha,
-                'text-gray-500 hover:bg-gray-50': !pokemon.grupo_batalha
-              }"
-            >
-              {{ pokemon.grupo_batalha ? 'Remover Equipe' : 'Adicionar Equipe' }}
-            </button>
-          </div>
+        <div class="flex space-x-2 mt-4">
+          <span
+            *ngFor="let type of pokemon.tipos"
+            class="text-xs font-semibold px-2 py-0.5 rounded-full text-white"
+            [ngClass]="{
+              'bg-green-600': type === 'grass',
+              'bg-red-600': type === 'fire',
+              'bg-blue-600': type === 'water',
+              'bg-gray-400': type === 'normal',
+              'bg-yellow-500': type === 'electric',
+              'bg-purple-600': type === 'poison'
+            }"
+          >
+            {{ type }}
+          </span>
+        </div>
+
+        <div class="flex justify-between w-full mt-4">
+          <button
+            (click)="toggleFavorite(pokemon)"
+            class="p-2 text-sm rounded-lg"
+            [ngClass]="{
+              'text-red-500 hover:bg-red-50': pokemon.favorito,
+              'text-gray-500 hover:bg-gray-50': !pokemon.favorito
+            }"
+          >
+            {{ pokemon.favorito ? 'Remover' : 'Favoritar' }}
+          </button>
+          <button
+            (click)="toggleTeam(pokemon)"
+            class="p-2 text-sm rounded-lg"
+            [ngClass]="{
+              'text-blue-600 hover:bg-blue-50': pokemon.grupo_batalha,
+              'text-gray-500 hover:bg-gray-50': !pokemon.grupo_batalha
+            }"
+          >
+            {{ pokemon.grupo_batalha ? 'Remover Equipe' : 'Adicionar Equipe' }}
+          </button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div *ngIf="!pokemonList" class="text-center p-10 text-gray-500">Carregando Pokémon...</div>
-    <div
-      *ngIf="pokemonList && filteredPokemonList.length === 0"
-      class="text-center p-10 text-gray-500"
-    >
-      Nenhum Pokémon encontrado neste filtro.
-    </div>
-  </main>
-</div>
+  <div *ngIf="!pokemonList" class="text-center p-10 text-gray-500">Carregando Pokémon...</div>
+  <div
+    *ngIf="pokemonList && filteredPokemonList.length === 0"
+    class="text-center p-10 text-gray-500"
+  >
+    Nenhum Pokémon encontrado neste filtro.
+  </div>
+</main>
