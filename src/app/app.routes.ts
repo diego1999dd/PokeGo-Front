@@ -4,8 +4,8 @@ import { PokemonListComponent } from './pokemon/pokemon-list/pokemon-list.compon
 import { authGuard } from './guards/auth-guard';
 import { RegisterComponent } from './auth/register/register.component';
 import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard.component';
-import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password';
-import { ChangePasswordComponent } from './profile/change-password/change-password'; // NOVO: Importar o componente
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
+import { ChangePasswordComponent } from './profile/change-password/change-password.component'; // NOVO: Importar o componente
 
 export const APP_ROUTES: Routes = [
   // Rotas Públicas (sem proteção)
