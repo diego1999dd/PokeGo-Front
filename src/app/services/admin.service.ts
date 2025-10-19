@@ -2,12 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-interface User {
-  IDUsuario: number;
-  Nome: string;
-  Email: string;
-  IsAdmin: boolean;
-}
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -33,6 +28,12 @@ export class AdminService {
     return this.http.post<{ msg: string }>(`${this.apiUrl}/reset_password`, {
       IDUsuario: userId,
       newPassword: newPassword,
+    });
+  }
+
+  deleteUser(userId: number): Observable<{ msg: string }> {
+    return this.http.delete<{ msg: string }>(`${this.apiUrl}/delete_user`, {
+      body: { IDUsuario: userId },
     });
   }
 }
