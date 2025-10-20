@@ -1,59 +1,84 @@
-# PokeGoFront
+# POKEGO-FRONT: APLICAÇÃO CLIENTE (ANGULAR + TAILWIND)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.6.
+![alt text](Pokedex.png)
 
-## Development server
+## Visão Geral
 
-To start a local development server, run:
+Esta é a aplicação Front-End desenvolvida em **Angular** para o **Desafio Técnico Fullstack da empresa Kogui**. O projeto consome a **PokeGo-API** (Backend Flask/Docker) para listar Pokémon, gerenciar o estado de usuário (login/cadastro) e persistir os dados de Favoritos e Equipe de Batalha.
 
-```bash
-ng serve
-```
+- **Framework:** Angular (utilizando Standalone Components).
+- **Estilização:** Tailwind CSS (seguindo a preferência do usuário).
+- **Comunicação:** `HttpClient` com Interceptor JWT.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 2. Como Iniciar o Projeto
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Pré-requisitos
 
-```bash
-ng generate component component-name
-```
+1.  O **Backend (`PokeGo-API`) Verifique no meu repositório ou nesse link: https://github.com/diego1999dd/PokeGo-API** deve estar rodando primeiro na porta **`8000`** (utilize `docker-compose up` no repositório do Backend).
+2.  Node.js e npm (ou pnpm/yarn).
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Inicialização do Servidor Angular
 
-```bash
-ng generate --help
-```
+1.  **Instalar Dependências:**
+    ```bash
+    npm install
+    # ou pnpm install / yarn install
+    ```
+2.  **Iniciar o Servidor:**
+    ```bash
+    npm run start
+    ```
+3.  Acesse no navegador: `http://localhost:4200/`
 
-## Building
+---
 
-To build the project run:
+## 3. Funcionalidades Detalhadas (Telas)
 
-```bash
-ng build
-```
+O Front-End implementa todas as telas obrigatórias do desafio: Login, Listagem Geral, Listagem de Favoritos e Exibição da Equipe de Batalha.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### 3.1. Telas de Acesso (Rotas Públicas)
 
-## Running unit tests
+| Rota                   | Componente                | Descrição                                                                                                                          |
+| :--------------------- | :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------- |
+| **`/login`**           | `LoginComponent`          | Tela principal de acesso.                                                                                                          |
+| **`/register`**        | `RegisterComponent`       | Tela de cadastro de novos usuários. **Destaque:** O **primeiro usuário** registrado é automaticamente definido como Administrador. |
+| **`/forgot-password`** | `ForgotPasswordComponent` | Formulário para redefinição de senha via Login ou Email.                                                                           |
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### 3.2. Pokédex Digital (Listagem Geral)
 
-```bash
-ng test
-```
+Rota protegida por `authGuard` (`/pokemon`).
 
-## Running end-to-end tests
+- **Listagem de Cards:** Apresentação responsiva dos Pokémon, mostrando ID, Imagem, Nome e **Status Base** (HP, Ataque e Defesa) com barras de progresso para visualização rápida.
+- **Contadores Dinâmicos:** Exibe o número total de Pokémon, e a contagem de **Favoritos** e **Grupo de Batalha** do usuário logado.
+- **Filtros por Status (Seções Mínimas):** Botões de filtro na listagem que atuam como as "seções dedicadas" do desafio:
+  - **Todos:** Exibe todos os Pokémon (com filtros de tipo opcionais).
+  - **Favoritos:** Exibe apenas os Pokémon marcados com a tag `Favorito` (listagem de Favoritos).
+  - **Grupo de Batalha:** Exibe apenas os Pokémon marcados com a tag `GrupoBatalha` (exibição da Equipe de Batalha).
+- **Filtros por Tipo:** Botões de filtro que permitem ao usuário listar Pokémon por Tipos (Fogo, Água, Grama, etc.).
 
-For end-to-end (e2e) testing, run:
+### 3.3. Gerenciamento de Status (Cards Interativos)
 
-```bash
-ng e2e
-```
+Cada card possui botões e indicadores visuais para as regras de negócio:
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+- **Favoritar (`toggleFavorite`):** O usuário pode marcar/desmarcar qualquer Pokémon. Não há limite imposto no Front-End, sendo o controle do Backend o principal.
+- **Grupo de Batalha (`toggleTeam`):** O usuário pode selecionar até **6 Pokémon**. O Front-End exibe um `alert` caso o limite do Backend seja atingido.
+- **Destaque Visual:** Os cards de Favoritos e Membros da Equipe recebem uma borda e ícones especiais (`★` e `E`) para destacá-los visualmente.
 
-## Additional Resources
+### 3.4. Painel de Administração (Diferencial)
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Rota protegida (`/admin`), acessível apenas se o usuário tiver o status `IsAdmin: true`.
+
+- **Gestão de Treinadores:** Lista todos os usuários cadastrados (Nome, Email, ID e Status Admin).
+- **Reset de Senha:** Permite que o administrador insira uma nova senha para qualquer usuário (cumpri o requisito opcional "Painel para RESET da Senha de Acesso do Usuário").
+- **Gestão de Privilégios:** Permite promover (`PROMOVER`) ou remover (`REMOVER`) o status de Admin de outros usuários. (Possui lógica para prevenir que o Admin remova o próprio status de segurança).
+
+---
+
+## 4. Estrutura e Padrões de Código
+
+- **Angular CLI (v20.3.6):** Utilizado para a estrutura do projeto e _bundling_.
+- **Serviços:** Lógica de negócio e comunicação com a API centralizadas em `auth.service.ts`, `pokemon.service.ts` e `admin.service.ts`.
+- **Formulários:** Uso de `ReactiveFormsModule` com validações para todas as telas de entrada de dados.
+- **Melhoria Semântica:** O componente principal utiliza a tag `<main>` (no `app.component.html`) para englobar as rotas, melhorando a semântica do HTML.
