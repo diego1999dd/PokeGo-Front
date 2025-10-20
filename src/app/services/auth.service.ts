@@ -9,9 +9,9 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl = 'http://127.0.0.1:5000/api/v1/auth';
+  private readonly apiUrl = 'http://127.0.0.1:8000/api/v1/auth';
 
-  private readonly apiBaseUrl = 'http://127.0.0.1:5000/api/v1';
+  private readonly apiBaseUrl = 'http://127.0.0.1:8000/api/v1';
 
   private readonly tokenKey = 'access_token';
   private readonly adminKey = 'is_admin';
